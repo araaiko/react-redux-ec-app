@@ -9,6 +9,7 @@ import { createBrowserHistory } from "history";
 import thunk from "redux-thunk";
 
 // Import reducers
+import { ProductsReducer } from "../products/reducers";
 import { UsersReducer } from "../users/reducers";
 
 const { createReduxHistory, routerMiddleware, routerReducer } =
@@ -18,6 +19,7 @@ const { createReduxHistory, routerMiddleware, routerReducer } =
 
 export const createStore = reduxCreateStore(
   combineReducers({
+    products: ProductsReducer,
     router: routerReducer,
     users: UsersReducer,
   }),

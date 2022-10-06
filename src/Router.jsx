@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { Home, Reset, SignIn, SignUp, Test } from "./templates";
+import { Home, ProductEdit, Reset, SignIn, SignUp, Test } from "./templates";
 import Auth from "./Auth";
 
 const Router = () => {
@@ -13,6 +13,7 @@ const Router = () => {
 
       <Route element={<Auth />}>
         <Route index element={<Home />} />
+        <Route path="/product/edit" element={<ProductEdit />} />
         <Route path="/test" element={<Test />} />
       </Route>
     </Routes>
