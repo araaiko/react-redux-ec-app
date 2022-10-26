@@ -1,18 +1,35 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { PrimaryButton, SelectBox, TextInput } from "../components/UIkit";
 import { useDispatch } from "react-redux";
 import { saveProduct } from "../reducks/products/operations";
-import ImageArea from "../components/Products/ImageArea";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import { ImageArea, SetSizeArea } from "../components/Products";
 
 const ProductEdit = () => {
   const dispatch = useDispatch();
+
+  let id = window.location.pathname.split("/product/edit")[1];
+
+  if (id !== "") {
+    id = id.split("/")[1];
+  }
 
   const [name, setName] = useState(""),
     [description, setDescription] = useState(""),
     [images, setImages] = useState([]),
     [category, setCategory] = useState(""),
+    [categories, setCategories] = useState([]),
     [gender, setGender] = useState(""),
-    [price, setPrice] = useState("");
+    [price, setPrice] = useState(""),
+    [sizes, setSizes] = useState([]);
 
   const inputName = useCallback(
     (event) => {
@@ -35,20 +52,20 @@ const ProductEdit = () => {
     [setPrice]
   );
 
-  const categories = [
-    {
-      id: "tops",
-      name: "トップス",
-    },
-    {
-      id: "shirts",
-      name: "シャツ",
-    },
-    {
-      id: "pants",
-      name: "パンツ",
-    },
-  ];
+  // const categories = [
+  //   {
+  //     id: "tops",
+  //     name: "トップス",
+  //   },
+  //   {
+  //     id: "shirts",
+  //     name: "シャツ",
+  //   },
+  //   {
+  //     id: "pants",
+  //     name: "パンツ",
+  //   },
+  // ];
 
   const genders = [
     {
@@ -64,6 +81,39 @@ const ProductEdit = () => {
       name: "レディース",
     },
   ];
+
+  useEffect(() => {
+    if (id !== "") {
+      getDoc(doc(db, "products", id)).then((snapshot) => {
+        const product = snapshot.data();
+        setImages(product.images);
+        setName(product.name);
+        setDescription(product.description);
+        setCategory(product.category);
+        setGender(product.gender);
+        setPrice(product.price);
+        setSizes(product.sizes);
+      });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const q = query(collection(db, "categories"), orderBy("order", "asc"));
+
+    getDocs(q).then((snapshots) => {
+      const list = [];
+
+      snapshots.forEach((snapshot) => {
+        const data = snapshot.data();
+        list.push({
+          id: data.id,
+          name: data.name,
+        });
+      });
+
+      setCategories(list);
+    });
+  }, []);
 
   return (
     <section>
@@ -119,12 +169,25 @@ const ProductEdit = () => {
           type={"number"}
           onChange={inputPrice}
         />
-        <div className="module-spacer--medium" />
+        <div className="module-spacer--small" />
+        <SetSizeArea sizes={sizes} setSizes={setSizes} />
+        <div className="module-spacer--small" />
         <div className="center">
           <PrimaryButton
             label={"商品情報を保存"}
             onClick={() =>
-              dispatch(saveProduct(name, description, category, gender, price, images))
+              dispatch(
+                saveProduct(
+                  id,
+                  name,
+                  description,
+                  category,
+                  gender,
+                  price,
+                  images,
+                  sizes
+                )
+              )
             }
           />
         </div>

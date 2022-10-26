@@ -3,7 +3,9 @@ const initialState = {
     list: [],
   },
   users: {
+    cart: [],
     isSignedIn: false,
+    orders: [],
     role: "",
     uid: "",
     username: "",

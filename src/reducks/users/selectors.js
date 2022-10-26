@@ -8,6 +8,16 @@ export const getIsSignedIn = createSelector(
   (state) => state.isSignedIn
 );
 
+export const getOrdersHistory = createSelector(
+  [usersSelector],
+  (state) => state.orders
+);
+
+export const getProductsInCart = createSelector(
+  [usersSelector],
+  (state) => state.cart
+);
+
 export const getUserId = createSelector(
   [usersSelector],
   (state) => state.uid // state: usersSelectorが返す値＝state.usersのこと
